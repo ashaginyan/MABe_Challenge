@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch:  # чтобы можно было запустить вручную
+  workflow_dispatch:
 
 jobs:
   publish:
@@ -30,13 +30,18 @@ jobs:
           mkdir -p ~/.kaggle
           echo "{\"username\":\"$KAGGLE_USERNAME\",\"key\":\"$KAGGLE_KEY\"}" > ~/.kaggle/kaggle.json
           chmod 600 ~/.kaggle/kaggle.json
+          kaggle datasets list -s mabe || true  # проверка что работает
 
       - name: Upload Code Dataset
         run: |
+          set -x
           cd dataset/code
-          kaggle datasets create -p . --dir-mode zip || kaggle datasets version -p . -m "Update code dataset" --dir-mode zip
+          kaggle datasets create -p . --dir-mode zip --private --verbose || \
+          kaggle datasets version -p . -m "Update code dataset" --dir-mode zip --verbose
 
       - name: Upload Weights Dataset
         run: |
+          set -x
           cd dataset/weights
-          kaggle datasets create -p . --dir-mode zip || kaggle datasets version -p . -m "Update weights dataset" --dir-mode zip
+          kaggle datasets create -p . --dir-mode zip --private --verbose || \
+          kaggle datasets version -p . -m "Update weights dataset" --dir-mode zip --verbose

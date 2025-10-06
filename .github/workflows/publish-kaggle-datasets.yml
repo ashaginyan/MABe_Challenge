@@ -1,0 +1,38 @@
+name: Publish Kaggle datasets
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install Kaggle CLI
+        run: pip install kaggle
+
+      - name: Upload Code Dataset
+        env:
+          KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+          KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
+        run: |
+          cd dataset/code
+          kaggle datasets version -p . -m "Update code dataset" --dir-mode zip || kaggle datasets create -p . -u
+
+      - name: Upload Weights Dataset
+        env:
+          KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+          KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
+        run: |
+          cd dataset/weights
+          kaggle datasets version -p . -m "Update weights dataset" --dir-mode zip || kaggle datasets create -p . -u

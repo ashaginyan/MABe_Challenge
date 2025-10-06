@@ -36,12 +36,12 @@ jobs:
         run: |
           set -x
           cd dataset/code
-          kaggle datasets create -p . --dir-mode zip --private --verbose || \
-          kaggle datasets version -p . -m "Update code dataset" --dir-mode zip --verbose
+          kaggle datasets create -p . --dir-mode zip || \
+          kaggle datasets version -p . -m "Update code dataset" --dir-mode zip
 
       - name: Upload Weights Dataset
         run: |
           set -x
           cd dataset/weights
-          kaggle datasets create -p . --dir-mode zip --private --verbose || \
-          kaggle datasets version -p . -m "Update weights dataset" --dir-mode zip --verbose
+          kaggle datasets create -p . --dir-mode zip || \
+          kaggle datasets version -p . -m "Update weights dataset" --dir-mode zip 

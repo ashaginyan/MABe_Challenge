@@ -1,9 +1,10 @@
-name: Publish Kaggle datasets
+name: Publish Kaggle Datasets
 
 on:
   push:
     branches:
       - main
+  workflow_dispatch:  # чтобы можно было запустить вручную
 
 jobs:
   publish:
@@ -21,18 +22,21 @@ jobs:
       - name: Install Kaggle CLI
         run: pip install kaggle
 
-      - name: Upload Code Dataset
+      - name: Configure Kaggle API
         env:
           KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
           KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
+        run: |
+          mkdir -p ~/.kaggle
+          echo "{\"username\":\"$KAGGLE_USERNAME\",\"key\":\"$KAGGLE_KEY\"}" > ~/.kaggle/kaggle.json
+          chmod 600 ~/.kaggle/kaggle.json
+
+      - name: Upload Code Dataset
         run: |
           cd dataset/code
-          kaggle datasets version -p . -m "Update code dataset" --dir-mode zip || kaggle datasets create -p . -u
+          kaggle datasets create -p . --dir-mode zip || kaggle datasets version -p . -m "Update code dataset" --dir-mode zip
 
       - name: Upload Weights Dataset
-        env:
-          KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
-          KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
         run: |
           cd dataset/weights
-          kaggle datasets version -p . -m "Update weights dataset" --dir-mode zip || kaggle datasets create -p . -u
+          kaggle datasets create -p . --dir-mode zip || kaggle datasets version -p . -m "Update weights dataset" --dir-mode zip
